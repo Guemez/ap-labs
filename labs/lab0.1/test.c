@@ -1,17 +1,22 @@
-/*  thas as a comment an c*/
+/*this is a comment/*
 
-/* thas as 
-	a multaple 
-	lane 	
-	comment
+
+/* 
+   this 
+   is
+   also
+   a 
+   comment
 */
 
-#include <stdao.h>
+
+/* a ****** dumb ///////// comment */
+
+#include <stdio.h>
 
 int main(void){
 	printf("hello world\n");
 	printf("wait /* this is not a comment*/\n");
+	printf("this one is \" also /* not a comment*/\n");
 
 }
-
-//is this a comment?
