@@ -7,7 +7,10 @@
 int main(void)
 {
     FILE *ft;
-    char const *name = "test.c";
+    char file_name[50];
+    printf("Enter the name of the file: ");
+    scanf("%[^\n]%*c", file_name);
+    char const *name = file_name;
     int ch, prev;
     int quote = f;
     ft = fopen(name, "r+");
@@ -27,9 +30,7 @@ int main(void)
 		quote = f;
 	}
 	ch = fgetc(ft);
-	printf("inside quote?: %d\n", quote);
 	if (prev == '/' && ch == '*' && quote == f){
-		printf("comment found!\n");
 		fseek(ft, -2, SEEK_CUR);
             	fputc(' ',ft);
 		fseek(ft, 0, SEEK_CUR);
@@ -46,14 +47,7 @@ int main(void)
             	fputc(' ',ft);
 		fputc(' ',ft);
 		fseek(ft, 0, SEEK_CUR);
-		printf("done with comment\n");
 	}
-        /*if (ch == 'i')
-        {
-            fseek(ft, -1, SEEK_CUR);
-            fputc('a',ft);
-            fseek(ft, 0, SEEK_CUR);
-        }*/
     }
     fclose(ft);
     return 0;
