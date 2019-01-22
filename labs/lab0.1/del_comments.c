@@ -22,7 +22,6 @@ int main(void)
     ch = prev = fgetc(ft);
     while (ch != EOF){
 	prev = ch;
-	
 	if (ch == '"' && quote == f && prev != '\\'){
 		quote = t;
 	}
@@ -33,20 +32,17 @@ int main(void)
 	if (prev == '/' && ch == '*' && quote == f){
 		fseek(ft, -2, SEEK_CUR);
             	fputc(' ',ft);
-		fseek(ft, 0, SEEK_CUR);
 		prev = fgetc(ft);
 		ch = fgetc(ft);
 		while ( prev != '*' || ch != '/'){
 			fseek(ft, -2, SEEK_CUR);
             		fputc(' ',ft);
-			fseek(ft, 0, SEEK_CUR);
 			prev = fgetc(ft);
 			ch = fgetc(ft);
 		}
 		fseek(ft, -2, SEEK_CUR);
             	fputc(' ',ft);
 		fputc(' ',ft);
-		fseek(ft, 0, SEEK_CUR);
 	}
     }
     fclose(ft);
