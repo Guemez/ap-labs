@@ -20,7 +20,7 @@ int main(void)
         exit(1);
     }
     ch = prev = fgetc(ft);
-    while (ch != EOF){
+    while (ch != EOF || prev != EOF){
 	prev = ch;
 	if (ch == '"' && quote == f && prev != '\\'){
 		quote = t;
@@ -29,21 +29,45 @@ int main(void)
 		quote = f;
 	}
 	ch = fgetc(ft);
+
 	if (prev == '/' && ch == '*' && quote == f){
 		fseek(ft, -2, SEEK_CUR);
             	fputc(' ',ft);
+		fseek(ft, 0, SEEK_CUR);
 		prev = fgetc(ft);
 		ch = fgetc(ft);
 		while ( prev != '*' || ch != '/'){
 			fseek(ft, -2, SEEK_CUR);
             		fputc(' ',ft);
+			fseek(ft, 0, SEEK_CUR);
 			prev = fgetc(ft);
 			ch = fgetc(ft);
 		}
 		fseek(ft, -2, SEEK_CUR);
             	fputc(' ',ft);
 		fputc(' ',ft);
+		fseek(ft, 0, SEEK_CUR);
 	}
+
+	if (prev == '/' && ch == '/' && quote == f){
+		fseek(ft, -2, SEEK_CUR);
+            	fputc(' ',ft);
+		fseek(ft, 0, SEEK_CUR);
+		prev = fgetc(ft);
+		ch = fgetc(ft);
+		while ( prev != '\n' || ch != '\n'){
+			fseek(ft, -2, SEEK_CUR);
+            		fputc(' ',ft);
+			fseek(ft, 0, SEEK_CUR);
+			prev = fgetc(ft);
+			ch = fgetc(ft);
+		}
+		fseek(ft, -2, SEEK_CUR);
+            	fputc(' ',ft);
+		fputc('\n',ft);
+		fseek(ft, 0, SEEK_CUR);
+	}
+
     }
     fclose(ft);
     return 0;
