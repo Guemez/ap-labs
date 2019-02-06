@@ -29,22 +29,21 @@ char* stradd(char *origin, char *addition){
 int strfind(char *origin, char *substr){
     int len1 = strlen(origin);
     int len2 = strlen(substr);
-    //printf("str1: %s, str2: %s\n", origin, substr);
-    //printf("l1: %d, l2: %d\n", len1, len2);
+    printf("l1: %d, l2: %d\n", len1, len2);
     int i = 0;
     int j = 0;
     int flag = 0;
     while(i < len1){
 	if(*(origin + i) == *(substr + j)){
 	    flag = 1;
-	    i++;
 	    j = i;
-	    for (int k = 1; k < len2 - 1; k++){
+	    for (int k = 0; k < len2 ; k++){
 		if(*(origin + i) != *(substr + k)){
 		    flag = 0;
 		    i = j;
 		    break;
 		}
+		i++;
 	    }
 	    
 	}
