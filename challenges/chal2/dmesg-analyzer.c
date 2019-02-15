@@ -40,17 +40,16 @@ void processLine(char *p){
     
     char *t = (char *)malloc(sizeof(char) * 1); 
     char *aux = (char *)malloc(sizeof(char) * 1);
-    char *x = (char *)malloc(sizeof(char) * 1);
     char *type = (char *)malloc(sizeof(char) * 1000);
-    char *limbo = (char *)malloc(sizeof(char) * 1000);
+    char *buffer = (char *)malloc(sizeof(char) * 1000);
     char *info = (char *)malloc(sizeof(char) * 1000);
-    bool flag_info = true;
+    bool flag = true;
     bool found_type = false;
     bool already_checked = false;
     
     for(int i = 0; i < 15; i++){
-        (*x = *p);
-        strcat(info, x);
+        (*t = *p);
+        strcat(info, t);
         p++;
     }    
 
@@ -61,13 +60,13 @@ void processLine(char *p){
         if(*t == ':' && *aux == ' ' && !already_checked){
             ++p;
             *t = *p;
-            strcpy(type, limbo);
-            flag_info = false;
+            strcpy(type, buffer);
+            flag = false;
             found_type = true;
             already_checked = true;
         }
-        if(flag_info){
-            strcat(limbo, t);
+        if(flag){
+            strcat(buffer, t);
         }else{
             strcat(info, t);
         }
@@ -76,7 +75,7 @@ void processLine(char *p){
     }
     if(!found_type){
         strcat(type, "General");
-        strcat(info, limbo);
+        strcat(info, buffer);
     }
     addToStruct(type, info);
 
@@ -136,8 +135,6 @@ void analizeLog(char *logFile, char *report) {
 	    strcat(line, f);
 	}
 
-
-	//write(1, f, c);
 	//write(fOutput, f, c);
     }
     for(int k = 0; k < pos; k++){
@@ -154,7 +151,6 @@ void analizeLog(char *logFile, char *report) {
 	    write(1, logs[k].info[j], 500);
 	}
     }
-    //fflush(fOutput);
 
 
     close(fInput);
