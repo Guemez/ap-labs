@@ -1,7 +1,9 @@
-To modify the string go to line 20 
-  print(substring("abbb"))
-and modify the string as you wish
+### dmesg-analizer.c
 
+## To compile
+`gcc dmsg-analizer.c -o dmsg-analizer`
 
-How to run:
-  python3 chal1.p3
+## To run
+`./dmsg-analizer <file>`
+
+### 
