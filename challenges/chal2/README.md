@@ -1,7 +1,12 @@
-To modify the string go to line 20 
-  print(substring("abbb"))
-and modify the string as you wish
+## dmesg-analyzer.c
 
+### To compile
+`gcc dmesg-analyzer.c -o dmesg-analyzer`
 
-How to run:
-  python3 chal1.p3
+### To run
+`./dmesg-analyzer <file>`
+
+## Directory Scanner
+
+### To run
+`go run dir-scan.go <path>`
