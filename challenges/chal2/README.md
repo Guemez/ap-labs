@@ -1,10 +1,10 @@
 ## dmesg-analyzer.c
 
 ### To compile
-`gcc dmsg-analyzer.c -o dmsg-analyzer`
+`gcc dmesg-analyzer.c -o dmesg-analyzer`
 
 ### To run
-`./dmsg-analyzer <file>`
+`./dmesg-analyzer <file>`
 
 ## Directory Scanner
 
