@@ -36,7 +36,7 @@ int main(int argc, char **argv) {
     return 0;
 }
 
-void processLine(char *p){
+void processLine(char *line){
     
     char *t = (char *)malloc(sizeof(char) * 1); 
     char *aux = (char *)malloc(sizeof(char) * 1);
@@ -48,18 +48,18 @@ void processLine(char *p){
     bool already_checked = false;
     
     for(int i = 0; i < 15; i++){
-        (*t = *p);
+        (*t = *line);
         strcat(info, t);
-        p++;
+        line++;
     }    
 
-    while((*t = *p) != '\0') {
-        *aux = *++p; 
-        --p;
+    while((*t = *line) != '\0') {
+        *aux = *++line; 
+        --line;
         //strcat(type, t);
         if(*t == ':' && *aux == ' ' && !already_checked){
-            ++p;
-            *t = *p;
+            ++line;
+            *t = *line;
             strcpy(type, buffer);
             flag = false;
             found_type = true;
@@ -71,7 +71,7 @@ void processLine(char *p){
             strcat(info, t);
         }
         
-        ++p;  
+        ++line;  
     }
     if(!found_type){
         strcat(type, "General");
@@ -138,7 +138,6 @@ void analizeLog(char *logFile, char *report) {
 	//write(fOutput, f, c);
     }
     for(int k = 0; k < pos; k++){
-    	//printf("%s\n", logs[k].type);
 	fprintf(fOutput, logs[k].type);
 	fprintf(fOutput, "\n");
 	write(1, logs[k].type, 100);
@@ -146,7 +145,6 @@ void analizeLog(char *logFile, char *report) {
 	for(int j = 0; j < logs[k].index; j++){
 	    fprintf(fOutput, "\t");
 	    fprintf(fOutput, logs[k].info[j]);
-	    //printf("\t%s", logs[k].info[j]);
 	    write(1, "\t", 1);
 	    write(1, logs[k].info[j], 500);
 	}
