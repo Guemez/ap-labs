@@ -1,9 +1,12 @@
-### dmesg-analizer.c
+## dmesg-analyzer.c
 
-## To compile
-`gcc dmsg-analizer.c -o dmsg-analizer`
+### To compile
+`gcc dmsg-analyzer.c -o dmsg-analyzer`
 
-## To run
-`./dmsg-analizer <file>`
+### To run
+`./dmsg-analyzer <file>`
 
-### 
+## Directory Scanner
+
+### To run
+`go run dir-scan.go <path>`
