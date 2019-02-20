@@ -14,7 +14,7 @@ int main( int argc, char *argv[]){
     printf("Initial lenght: %d\n", i);
     char *s = stradd(argv[1], argv[2]);
     printf("New string: %s\n", s);
-    int j = strfind(argv[1], argv[3]);
+    int j = strfind(s, argv[3]);
     printf("Substring  was found: ");
     if(j == 1){
 	printf("yes\n");
