@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"time"
+	"os"
 )
 
 func handleConn(c net.Conn) {
@@ -20,7 +21,11 @@ func handleConn(c net.Conn) {
 }
 
 func main() {
-	listener, err := net.Listen("tcp", "localhost:9090")
+	var port string
+		if os.Args[1] == "-port" {
+			port = os.Args[2]
+	}
+	listener, err := net.Listen("tcp", "localhost:" + port)
 	if err != nil {
 		log.Fatal(err)
 	}
