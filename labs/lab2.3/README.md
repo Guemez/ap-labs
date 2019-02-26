@@ -4,7 +4,7 @@ Lab 2.3 - Cross-referencer
 To compile
 ---------------------------------------
 ```
-gcc cross-ref.c -o cross-ref
+make
 ```
 
 To run
