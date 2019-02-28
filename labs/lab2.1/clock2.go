@@ -11,8 +11,15 @@ import (
 
 func handleConn(c net.Conn) {
 	defer c.Close()
+	timeZone := os.Getenv("TZ")
+
+	loc, err := time.LoadLocation(timeZone)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	for {
-		_, err := io.WriteString(c, time.Now().Format("15:04:05\n"))
+		_, err := io.WriteString(c, (timeZone + ":  " + time.Now().In(loc).Format("15:04:05\n")))
 		if err != nil {
 			return // e.g., client disconnected
 		}
