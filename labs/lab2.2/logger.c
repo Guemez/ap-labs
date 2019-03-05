@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdlib.h>
 
 #define RESET		0
 #define BRIGHT 		1
@@ -33,9 +34,9 @@ void bt(void) {
 
 
     c = backtrace(addresses, 10);
-    printf("backtrace returned: %dn", c);
+    printf("BEGIN\n", c);
     for(i = 0; i < c; i++) {
-        printf("%d: %Xn", i, (int)addresses[i]);
+        printf("%d: %X\n", i, (int)addresses[i]);
     }
     printf("\nEND\n");
 }
