@@ -1,7 +1,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include <stdlib.h>
+#include <execinfo.h>
 
 #define RESET		0
 #define BRIGHT 		1
@@ -31,12 +31,13 @@ void textcolor(int attr, int fg, int bg)
 void bt(void) {
     int c, i;
     void *addresses[10];
-
-
+    char** names;
     c = backtrace(addresses, 10);
+    names = backtrace_symbols(addresses, c);
     printf("BEGIN\n", c);
     for(i = 0; i < c; i++) {
-        printf("%d: %X\n", i, (int)addresses[i]);
+        //printf("%d: %X", i, (int)addresses[i]);
+        printf("%s\n", names[i]);
     }
     printf("\nEND\n");
 }
