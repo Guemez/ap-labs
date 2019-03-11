@@ -8,6 +8,8 @@ int main(int argc, char const *argv[])
     char myChar = 'H';
     char *myString = "Hello World";
 
+	//initLogger("syslog");
+
 	infof("%cello, this is general information\n", myChar);	
 	warnf("%cello, this is a warning with code: %f\n", myChar, myDouble);
 	errorf("%cello, this is an error with code: %d\n", myChar, myInt);
