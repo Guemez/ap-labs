@@ -58,9 +58,11 @@ void bt(void) {
        printf("\nEND\n");
     } else{
        openlog ("LOG-PANIC", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
-
-       syslog (LOG_ERR, names[i]);
-
+       syslog (LOG_ERR, "BEGIN");
+       for(i = 0; i < c; i++){
+         syslog (LOG_ERR, names[i]);
+       }
+       syslog (LOG_ERR, "END");
        closelog ();
     }
     
@@ -133,7 +135,7 @@ int panicf(const char *format, ...){
 		closelog();
    }
    va_end (arg);
-   bt();
+   //bt();
    printf("\033[0m");
    return done;
 }
