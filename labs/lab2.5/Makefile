@@ -1,2 +1,2 @@
 make:
-	gcc testLogger.c -o testLogger logger.c -rdynamic
+	go build crawl3.go
