@@ -1,2 +1,3 @@
 make:
-	gcc testLogger.c -o testLogger logger.c -rdynamic
+	gcc monitor.c -o monitor logger.c -rdynamic
+
