@@ -1,4 +1,4 @@
-## Logger
+## Monitor
 
 ### To compile
 ```
@@ -7,5 +7,5 @@ make
 
 ### To run
 ```
-./testLogger
+./monitor <directory path>
 ```
