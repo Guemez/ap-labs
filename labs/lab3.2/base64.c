@@ -31,7 +31,7 @@ int base64encode(const void* data_buf, size_t dataLength, char* result, size_t r
    /* increment over the length of the string, three characters at a time */
    for (x = 0; x < dataLength; x += 3) 
    {
-      //infof("Char: %li\n", x);
+      infof("Char: %li\n", x);
       progress = x;
 
       /* these three 8-bit (ASCII) characters become one 24-bit number */
@@ -125,7 +125,7 @@ int base64decode (char *in, size_t inLen, unsigned char *out, size_t outLen)
     
     while (in < end) {
 	decodeCount++;
-	//infof("Char: %li\n", decodeCount);
+	infof("Char: %li\n", decodeCount);
 	progress = decodeCount;
 
         unsigned char c = d[*in++];
