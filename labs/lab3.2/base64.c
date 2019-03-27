@@ -16,6 +16,7 @@
 size_t file_size;
 size_t progress;
 
+// ENCODE AND DECODE FUNCTIONS RETRIEVED FROM: https://en.wikibooks.org/wiki/Algorithm_Implementation/Miscellaneous/Base64
 
 int base64encode(const void* data_buf, size_t dataLength, char* result, size_t resultSize)
 {
@@ -30,7 +31,7 @@ int base64encode(const void* data_buf, size_t dataLength, char* result, size_t r
    /* increment over the length of the string, three characters at a time */
    for (x = 0; x < dataLength; x += 3) 
    {
-      infof("Char: %li\n", x);
+      //infof("Char: %li\n", x);
       progress = x;
 
       /* these three 8-bit (ASCII) characters become one 24-bit number */
@@ -124,7 +125,7 @@ int base64decode (char *in, size_t inLen, unsigned char *out, size_t outLen)
     
     while (in < end) {
 	decodeCount++;
-	infof("Char: %li\n", decodeCount);
+	//infof("Char: %li\n", decodeCount);
 	progress = decodeCount;
 
         unsigned char c = d[*in++];
@@ -206,9 +207,12 @@ int main(int argc, char **argv){
     char *exitFile = malloc(MAX_SIZE);        
 
 
-    infof("size: %li\n", file_size);
+    //infof("size: %li\n", file_size);
 
     if (signal(SIGINT, sigHandler) == SIG_ERR){
+        errorf("Error handling signals\n");
+    }
+    if (signal(30, sigHandler) == SIG_ERR){ //SIGINFO
         errorf("Error handling signals\n");
     }
 
@@ -225,7 +229,7 @@ int main(int argc, char **argv){
 	if (results == EOF) {
     	    errorf("Failed to write\n");
 	}
-	infof("encoded message: %s\n", exitFile);
+	//infof("encoded message: %s\n", exitFile);
 
     } else if(strcmp(argv[1], "--decode") == 0){
 
@@ -236,7 +240,7 @@ int main(int argc, char **argv){
 	if (results == EOF){
 	    errorf("Failed to write\n");
 	}
-	infof("decoded message: %s\n", exitFile);
+	//infof("decoded message: %s\n", exitFile);
 
     } else {
 
