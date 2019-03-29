@@ -24,6 +24,7 @@ func main() {
 	}
 	done := make(chan struct{})
 	go func() {
+		fmt.Fprintf(conn, usr+" ")
 		io.Copy(os.Stdout, conn) // NOTE: ignoring errors
 		log.Println("done")
 		done <- struct{}{} // signal the main goroutine
