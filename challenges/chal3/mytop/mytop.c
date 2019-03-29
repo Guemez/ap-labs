@@ -49,7 +49,7 @@ int main(){
 	DIR *d = opendir("/proc/");
 
 	char path[30], fpath[30];
-	int c = 1, openFiles;
+	int c = 1, openFiles = 0;
     while(1){
 	strcpy(path, "/proc/");
 	strcpy(fpath, "/proc");
@@ -63,16 +63,16 @@ int main(){
 			strcpy(path, "/proc/");
 		}
 
-		/*DIR *fdd = opendir(fpath);
+		DIR *fdd = opendir(fpath);
 		struct dirent *fd_dir;
-		while((fd_dir = readdir(fdd)) != NULL) {
+		/*while((fd_dir = readdir(fdd)) != NULL) {
 			openFiles++;
-		}
+		}*/
 
 		closedir(fdd);
 		all_p[pos].open_files = openFiles - 2;
 		strcpy(fpath, "/proc/");
-		checkOpenFiles(fpath);*/
+		//checkOpenFiles(fpath);
 
 
 	}
@@ -110,7 +110,7 @@ void showTable(){
 		//printf("%s\t%s\n", all_p[i].pid, all_p[i].parent);
 		memory = atof(all_p[i].memory) / 1000;
 		
-		printf("|%8s|%8s|%15s|%7s|%12f|\n", all_p[i].pid, all_p[i].parent, all_p[i].state, all_p[i].threads, memory);	
+		printf("|%8s|%8s|%15s|%7s|%12f|%10i|\n", all_p[i].pid, all_p[i].parent, all_p[i].state, all_p[i].threads, memory, all_p[i].open_files);	
 
 	}
 	printf("|________|________|_______________|_______|____________|__________|\n");
