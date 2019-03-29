@@ -11,11 +11,14 @@
 #include <signal.h>
 #include <time.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
 void analizeTxt(char *logFile);
 
 void clear();
 static void sigHandler(int sig);
+void showTable();
+void checkOpenFiles();
 
 
 struct process{
@@ -24,7 +27,7 @@ struct process{
     char *parent;
     char *name;
     char *state;
-    int memory;
+    char *memory;
     char *threads;
     int open_files;
     char *ptm;
@@ -45,44 +48,35 @@ int main(){
 
 	DIR *d = opendir("/proc/");
 
-	char path[30];
-	int c = 1;
-
+	char path[30], fpath[30];
+	int c = 1, openFiles;
     while(1){
 	strcpy(path, "/proc/");
+	strcpy(fpath, "/proc");
 	while((dir = readdir(d)) != NULL) {
 		if(isdigit(dir->d_name[0])){
 			strcat(path, strcat(dir->d_name, "/status"));
+			all_p[pos].memory = "0";
 			analizeTxt(path);
 			pos++;
 			//printf("\n");
 			strcpy(path, "/proc/");
 		}
 
-	}
-	printf("|_______|_______|_______________|_______|\n");
-	printf("|PID    | PPID  | STATUS        |THREADS|\n");
-	printf("|_______|_______|_______________|_______|\n");
-	for(int i = 0; i < pos; i++){
-		//printf("%s\t%s\n", all_p[i].pid, all_p[i].parent);
-		write(1, "|", 1);
-		write(1, all_p[i].pid, 30);
-		write(1, "\t", 1);
-		write(1, "|", 1);
-		write(1, all_p[i].parent, 30);
-		write(1, "\t", 1);
-		write(1, "|", 1);
-		write(1, all_p[i].state, 30);
-		write(1, "\t", 1);
-		write(1, "|", 1);
-		write(1, all_p[i].threads, 30);
-		write(1, "\t", 1);
-		write(1, "|", 1);
-		write(1, "\n", 1);
+		/*DIR *fdd = opendir(fpath);
+		struct dirent *fd_dir;
+		while((fd_dir = readdir(fdd)) != NULL) {
+			openFiles++;
+		}
+
+		closedir(fdd);
+		all_p[pos].open_files = openFiles - 2;
+		strcpy(fpath, "/proc/");
+		checkOpenFiles(fpath);*/
+
 
 	}
-	printf("|_______|_______|_______________|_______|\n");
-	printf("%i\n", c);
+	showTable();
 	sleep(5);
 	clear();
 	c++;
@@ -92,7 +86,36 @@ int main(){
 	return 0;
 }
 
+/*void checkOpenFiles(char *fpath){
 
+		int openFiles;
+		DIR *fdd = opendir(fpath);
+		struct dirent *fd_dir;
+		while((fd_dir = readdir(fdd)) != NULL) {
+			openFiles++;
+		}
+
+		closedir(fdd);
+		all_p[pos].open_files = openFiles - 2;
+		strcpy(fpath, "/proc/");
+
+}*/
+
+void showTable(){
+	float memory;
+	printf("|________|________|_______________|_______|____________|__________|\n");
+	printf("|PID     | PPID   | STATUS        |THREADS| MEMORY     |OPEN FILES|\n");
+	printf("|________|________|_______________|_______|____________|__________|\n");
+	for(int i = 0; i < pos; i++){
+		//printf("%s\t%s\n", all_p[i].pid, all_p[i].parent);
+		memory = atof(all_p[i].memory) / 1000;
+		
+		printf("|%8s|%8s|%15s|%7s|%12f|\n", all_p[i].pid, all_p[i].parent, all_p[i].state, all_p[i].threads, memory);	
+
+	}
+	printf("|________|________|_______________|_______|____________|__________|\n");
+	return;
+}
 
 static void
 sigHandler(int sig)
@@ -106,6 +129,7 @@ sigHandler(int sig)
     timeinfo = localtime ( &rawtime );
     strcat(filename, asctime(timeinfo));
     strcat(filename, ".txt");
+    float memory;
 
 	FILE *fd = fopen(filename, "w");
 
@@ -113,14 +137,17 @@ sigHandler(int sig)
 		perror("Can't open file");
 		exit(1);
 	}
-
-	fprintf(fd, "|_______|_______|_______________|_______|\n");
-	fprintf(fd, "|PID    | PPID  | STATUS        |THREADS|\n");
-	fprintf(fd, "|_______|_______|_______________|_______|\n");
+	fprintf(fd, "|________|________|_______________|_______|____________|__________|\n");
+	fprintf(fd, "|PID     | PPID   | STATUS        |THREADS| MEMORY     |OPEN FILES|\n");
+	fprintf(fd, "|________|________|_______________|_______|____________|__________|\n");
 	for(int i = 0; i < pos; i++){
-		fprintf(fd, "|%s\t|%s\t|%s\t|%s\t|\n", all_p[i].pid, all_p[i].parent, all_p[i].state, all_p[i].threads);
+		//printf("%s\t%s\n", all_p[i].pid, all_p[i].parent);
+		memory = atof(all_p[i].memory) / 1000;
+		
+		fprintf(fd, "|%8s|%8s|%15s|%7s|%12f|\n", all_p[i].pid, all_p[i].parent, all_p[i].state, all_p[i].threads, memory);	
+
 	}
-	fprintf(fd, "|_______|_______|_______________|_______|\n");
+	fprintf(fd, "|________|________|_______________|_______|____________|__________|\n");
 
 	fclose(fd);
     
@@ -165,6 +192,15 @@ strcmp(buffer, "name") == 0 || strcmp(buffer, "stat") == 0 || strcmp(buffer, "th
 	        }	
 
 	    }
+	    if (strcmp(buffer, "vmrs") == 0){
+
+	        if(*t != ' ' && *t != ':' && *t != '\t' && *t != '\n' && *t != 'k' && *t != 'b'){
+		    //printf("char:%s\n", t);
+		    strcat(data, t);
+	        }	
+
+	    }
+		
 	}
 
 	++line;
@@ -198,6 +234,11 @@ strcmp(buffer, "name") == 0 || strcmp(buffer, "stat") == 0 || strcmp(buffer, "th
 	all_p[pos].threads = (char *)malloc(sizeof(char) * 50);
 	strcpy(all_p[pos].threads, data);
 	//printf("inside struct: %s\n", all_p[pos].threads);
+    }
+    else if (strcmp(buffer, "vmrs") == 0){
+	//printf("# THREADS: %s\n",data);
+	all_p[pos].memory = (char *)malloc(sizeof(char) * 50);
+	strcpy(all_p[pos].memory, data);
     }
 
 }
@@ -234,6 +275,7 @@ void analizeTxt(char *logFile) {
 	}
 
     }
+    close(fp);
 
 }
 
