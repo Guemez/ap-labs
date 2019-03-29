@@ -13,7 +13,7 @@ import (
 	"log"
 	"net"
 	"strings"
-	"os"
+	//"os"
 	"time"
 )
 
@@ -22,7 +22,7 @@ type client chan<- string // an outgoing message channel
 
 
 var users = make(map[string]string);
-var uc = make(map[string]net.Conn);
+var users_chan = make(map[string]net.Conn);
 
 var (
 	entering = make(chan client)
@@ -63,28 +63,25 @@ func handleConn(conn net.Conn, user string) {
 	ch := make(chan string) // outgoing client messages
 	go clientWriter(conn, ch)
 	who := conn.RemoteAddr().String()
+	ch <- "You are " + user
+	messages <- user + " has arrived"
+	entering <- ch
 
-	_, found := users[strings.TrimSuffix(user, "\n")]
+	_, found := users[user]
 	if(found){
 		ch <- "There's already a user with that username"
 		conn.Close()
-		return
+
 
 	}
-	users[strings.TrimSuffix(user, "\n")] = who
-	//users_chan[user] = conn
-	uc[strings.TrimSuffix(user, "\n")] = conn
-	fmt.Println("New connected user [" + strings.TrimSuffix(user, "\n") +"]")
-	ch <- "Welcome to Simple IRC server"
-	ch <- "irc-server > Your user [" + strings.TrimSuffix(user, "\n") + "] is successfully logged"
 
-	messages <- strings.TrimSuffix(user, "\n") + " has arrived"
-	entering <- ch
+	users[user] = who
+	//users_chan[user] = conn
+	users_chan[who]=conn
 
 	
 
 	input := bufio.NewScanner(conn)
-	//ch <- strings.TrimSuffix(user, "\n") + "> "
 	fmt.Println(input.Text());
 	for input.Scan() {
 		var s []string
@@ -103,12 +100,12 @@ func handleConn(conn net.Conn, user string) {
 			u = "not user found"
 			for k, v :=range users{
 				if(strings.Trim(k, " ") == strings.Trim(s[1], " ")){
-					u = "username: " + k + " IP: " + v
+					u = k + " " + v
 				}
 			}
 			ch <- u
 			}else{
-				ch <- "irc-server > not enough arguments /user <username>"
+				ch <- "not enough arguments /user <username>"
 			}
 			
 		case "/time":
@@ -116,29 +113,32 @@ func handleConn(conn net.Conn, user string) {
 		case "/msg":
 			if(len(s) > 2){
 				var u string
-				for i, msg := range s{
-					if(i > 1){
-						u = u + msg + " "
-					}
+				for _, msg := range s{
+					u = u + msg + " "
 
 				}
-				fmt.Println(u)
-				if _,found := uc[strings.Trim(s[1], " ")]; found{
-					fmt.Fprintln(uc[strings.Trim(s[1], " ")], strings.TrimSuffix(user, "\n") + ">" + u)
+				fmt.Println(s[1])
+				if _,found :=users_chan[users[strings.Trim(s[1], " ")]]; found{
+					fmt.Fprintln(users_chan[users[strings.Trim(s[1], " ")]], u)
 				}else{
-					ch <- "irc-server > No such user"
+					ch <- "No such user"
 				}
+				for k, _ :=range users_chan{
+					fmt.Println(k)
+				}
+				//connection := users_chan[strings.Trim(s[1], " ")]
+				//fmt.Fprintf(connection, u)
+				//ch <- u
 			}
 		default:
-			messages <- strings.TrimSuffix(user, "\n") + ": " + input.Text()
+			messages <- user + ": " + input.Text()
 		}
 		}
 	}
 	// NOTE: ignoring potential errors from input.Err()
 
 	leaving <- ch
-	messages <- "irc-server >" + strings.TrimSuffix(user, "\n") + " has left"
-	fmt.Println("[" + strings.TrimSuffix(user, "\n") +"] left")
+	messages <- user + " has left"
 	delete(users, user)
 	conn.Close()
 }
@@ -153,10 +153,9 @@ func clientWriter(conn net.Conn, ch <-chan string) {
 
 //!+main
 func main() {
-	localhost:="localhost:"
+
 	
-	listener, err := net.Listen("tcp", localhost + os.Args[4])
-	fmt.Println("Simple IRC Server started at "+ localhost + os.Args[4])
+	listener, err := net.Listen("tcp", "localhost:8000")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -164,7 +163,7 @@ func main() {
 	go broadcaster()
 	for {
 		conn, err := listener.Accept()
-		message,_:= bufio.NewReader(conn).ReadString('\n');
+		message,_:= bufio.NewReader(conn).ReadString(' ');
 		if err != nil {
 			log.Print(err)
 			continue

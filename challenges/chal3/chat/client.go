@@ -16,15 +16,15 @@ import (
 
 //!+
 func main() {
+	
 	usr := os.Args[2];
-	fmt.Println(usr);
-	conn, err := net.Dial("tcp", "localhost:8000")
+	conn, err := net.Dial("tcp", os.Args[4])
 	if err != nil {
 		log.Fatal(err)
 	}
 	done := make(chan struct{})
 	go func() {
-		fmt.Fprintf(conn, usr+" ")
+		fmt.Fprintf(conn, usr+"\n")
 		io.Copy(os.Stdout, conn) // NOTE: ignoring errors
 		log.Println("done")
 		done <- struct{}{} // signal the main goroutine
