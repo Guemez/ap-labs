@@ -52,28 +52,34 @@ int main(){
 	int c = 1, openFiles = 0;
     while(1){
 	strcpy(path, "/proc/");
-	strcpy(fpath, "/proc");
+	strcpy(fpath, "/proc/");
 	while((dir = readdir(d)) != NULL) {
 		if(isdigit(dir->d_name[0])){
-			strcat(path, strcat(dir->d_name, "/status"));
+			strcat(path, dir->d_name);
+			strcat(path, "/status");
+			printf("path: %s\n", path);
 			all_p[pos].memory = "0";
 			analizeTxt(path);
 			pos++;
 			//printf("\n");
 			strcpy(path, "/proc/");
-		}
-
+		strcat(fpath, dir->d_name);
+		strcat(fpath, "/fd");
+		printf("file path: %s\n", fpath);
 		DIR *fdd = opendir(fpath);
 		struct dirent *fd_dir;
-		/*while((fd_dir = readdir(fdd)) != NULL) {
+		while((fd_dir = readdir(fdd)) != NULL) {
 			openFiles++;
-		}*/
+		}
 
 		closedir(fdd);
 		all_p[pos].open_files = openFiles - 2;
 		strcpy(fpath, "/proc/");
 		//checkOpenFiles(fpath);
 
+
+
+		}
 
 	}
 	showTable();
