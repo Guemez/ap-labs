@@ -16,3 +16,5 @@ To run
 ```
 
 To get snapshot of current table press ctrl + c or send SIGINT signal
+
+# The table updates every 3 seconds
