@@ -20,17 +20,18 @@ static void sigHandler(int sig);
 void showTable();
 void checkOpenFiles();
 
+int algo = 0;
+
 
 struct process{
 
-    char *pid;
-    char *parent;
-    char *name;
-    char *state;
-    char *memory;
-    char *threads;
+    char pid[50];
+    char parent[50];
+    char name[50];
+    char state[50];
+    char memory[50];
+    char threads[50];
     int open_files;
-    char *ptm;
 
 };
 
@@ -49,7 +50,7 @@ int main(){
 	DIR *d = opendir("/proc/");
 
 	char path[30], fpath[30];
-	int c = 1, openFiles = 0;
+	int c = 1;
     while(1){
 	strcpy(path, "/proc/");
 	strcpy(fpath, "/proc/");
@@ -58,42 +59,28 @@ int main(){
 			strcat(path, dir->d_name);
 			strcat(path, "/status");
 			//printf("path: %s\n", path);
-			all_p[pos].memory = "0";
+			strcpy(all_p[pos].memory, "0");
 			analizeTxt(path);
 			pos++;
 			//printf("\n");
 			strcpy(path, "/proc/");
-		strcat(fpath, dir->d_name);
-		strcat(fpath, "/fd");
-		//printf("file path: %s\n", fpath);
-		DIR *fdd = opendir(fpath);
-		struct dirent *fd_dir;
-		while((fd_dir = readdir(fdd)) != NULL) {
-			openFiles++;
-		}
-
-		closedir(fdd);
-		all_p[pos].open_files = openFiles - 2;
-		openFiles = 0;
-		strcpy(fpath, "/proc/");
-		//checkOpenFiles(fpath);
-
-
-
+			strcat(fpath, dir->d_name);
+			strcat(fpath, "/fd");
+			checkOpenFiles(fpath);
+			algo++;
 		}
 
 	}
 	showTable();
-	sleep(5);
+	sleep(3);
 	clear();
 	c++;
     }
-
-	clear();
-	return 0;
+    clear();
+    return 0;
 }
 
-/*void checkOpenFiles(char *fpath){
+void checkOpenFiles(char *fpath){
 
 		int openFiles;
 		DIR *fdd = opendir(fpath);
@@ -106,24 +93,23 @@ int main(){
 		all_p[pos].open_files = openFiles - 2;
 		strcpy(fpath, "/proc/");
 
-}*/
+}
 
 void showTable(){
 	float memory;
-	printf("|________|________|_______________|_______|____________|__________|\n");
-	printf("|PID     | PPID   | STATUS        |THREADS| MEMORY     |OPEN FILES|\n");
-	printf("|________|________|_______________|_______|____________|__________|\n");
+	printf("|________|________|_______________|_______|__________|__________|________________________________________|\n");
+	printf("|PID     | PPID   | STATUS        |THREADS| MEMORY   |OPEN FILES|NAME                                    |\n");
+	printf("|________|________|_______________|_______|__________|__________|________________________________________|\n");
 	for(int i = 0; i < pos; i++){
 		if(all_p[i].pid == 0){
 			continue;
 		}
-		//printf("%s\t%s\n", all_p[i].pid, all_p[i].parent);
 		memory = atof(all_p[i].memory) / 1000;
 		
-		printf("|%8s|%8s|%15s|%7s|%12f|%10i|\n", all_p[i].pid, all_p[i].parent, all_p[i].state, all_p[i].threads, memory, all_p[i].open_files);	
+		printf("|%8s|%8s|%15s|%7s|%8.4f M|%10i|%40s|\n", all_p[i].pid, all_p[i].parent, all_p[i].state, all_p[i].threads, memory, all_p[i].open_files, all_p[i].name);	
 
 	}
-	printf("|________|________|_______________|_______|____________|__________|\n");
+	printf("|________|________|_______________|_______|__________|__________|________________________________________|\n");
 	return;
 }
 
@@ -147,20 +133,19 @@ sigHandler(int sig)
 		perror("Can't open file");
 		exit(1);
 	}
-	fprintf(fd, "|________|________|_______________|_______|____________|__________|\n");
-	fprintf(fd, "|PID     | PPID   | STATUS        |THREADS| MEMORY     |OPEN FILES|\n");
-	fprintf(fd, "|________|________|_______________|_______|____________|__________|\n");
+	fprintf(fd, "|________|________|_______________|_______|__________|__________|________________________________________|\n");
+	fprintf(fd, "|PID     | PPID   | STATUS        |THREADS| MEMORY   |OPEN FILES|NAME                                    |\n");
+	fprintf(fd, "|________|________|_______________|_______|__________|__________|________________________________________|\n");
 	for(int i = 0; i < pos; i++){
 		if(all_p[i].pid == 0){
 			continue;
 		}
-		//printf("%s\t%s\n", all_p[i].pid, all_p[i].parent);
 		memory = atof(all_p[i].memory) / 1000;
 		
-		fprintf(fd, "|%8s|%8s|%15s|%7s|%12f|%10i|\n", all_p[i].pid, all_p[i].parent, all_p[i].state, all_p[i].threads, memory, all_p[i].open_files);	
+		fprintf(fd, "|%8s|%8s|%15s|%7s|%8.4f M|%10i|%40s|\n", all_p[i].pid, all_p[i].parent, all_p[i].state, all_p[i].threads, memory, all_p[i].open_files, all_p[i].name);	
 
 	}
-	fprintf(fd, "|________|________|_______________|_______|____________|__________|\n");
+	fprintf(fd, "|________|________|_______________|_______|__________|__________|________________________________________|\n");
 
 	fclose(fd);
     
@@ -175,21 +160,24 @@ void clear() {
 
 void processLine(char *line){
     
-    char *t = (char *)malloc(sizeof(char) * 1); 
+    //char *t = (char *)malloc(sizeof(char) * 1); 
     char *buffer = (char *)malloc(sizeof(char) * 4);
-    char *data = (char *)malloc(sizeof(char) * 50);
+    char *data = (char *)malloc(sizeof(char) * 80);
     bool flag = true;
     int p = 0;
 
-    while((*t = *line) != '\0'){
-	//printf("char: %s\n", t);
-	if(*t == ':'){
+	int j = 0;
+
+	for(int i = 0; line[i] != '\0'; i++){
+	
+		if(line[i] == ':'){
 	    flag = false;
 	}
 
 	if(flag){
 	    if(p<4){
-		strcat(buffer, t);
+		//printf("%s", t);
+		buffer[i] = line[i];
 		p++;
 	    }
 	}
@@ -199,58 +187,38 @@ void processLine(char *line){
 	    if (strcmp(buffer, "pid") == 0 || strcmp(buffer, "ppid") == 0 ||
 strcmp(buffer, "name") == 0 || strcmp(buffer, "stat") == 0 || strcmp(buffer, "thre") == 0){
 
-	        if(*t != ' ' && *t != ':' && *t != '\t' && *t != '\n'){
+	        if(line[i] != ' ' && line[i] != ':' && line[i] != '\t' && line[i] != '\n'){
 		    //printf("char:%s\n", t);
-		    strcat(data, t);
+		    data[j] = line[i];
+			j++;
 	        }	
 
 	    }
 	    if (strcmp(buffer, "vmrs") == 0){
 
-	        if(*t != ' ' && *t != ':' && *t != '\t' && *t != '\n' && *t != 'k' && *t != 'b'){
-		    //printf("char:%s\n", t);
-		    strcat(data, t);
+	        if(line[i] != ' ' && line[i] != ':' && line[i] != '\t' && line[i] != '\n' && line[i] != 'k' && line[i] != 'b'){
+		    data[j] = line[i];
+			j++;
 	        }	
 
 	    }
 		
 	}
 
-	++line;
-    }
+	}
 
-    //printf("buffer: %s, data: %s\n", buffer, data);
 
     if (strcmp(buffer, "pid") == 0){
-	//printf("PID: %s\n",data);
-	all_p[pos].pid = (char *)malloc(sizeof(char) * 50);
 	strcpy(all_p[pos].pid, data);
-	//printf("inside struct: %s\n", all_p[pos].pid);
     }else if (strcmp(buffer, "ppid") == 0){
-	//printf("PPID: %s\n",data);
-	all_p[pos].parent = (char *)malloc(sizeof(char) * 50);
 	strcpy(all_p[pos].parent, data);
-	//printf("inside struct: %s\n", all_p[pos].parent);
     }else if (strcmp(buffer, "name") == 0){
-	all_p[pos].name = (char *)malloc(sizeof(char) * 50);
 	strcpy(all_p[pos].name, data);
-	//printf("NAME: %s\n",data);
-
-	//printf("name in struct: %s\n", all_p[pos].name);
     }else if (strcmp(buffer, "stat") == 0){
-	//printf("STATUS: %s\n",data);
-	all_p[pos].state = (char *)malloc(sizeof(char) * 50);
 	strcpy(all_p[pos].state, data);
-	//printf("inside struct: %s\n", all_p[pos].state);
     }else if (strcmp(buffer, "thre") == 0){
-	//printf("# THREADS: %s\n",data);
-	all_p[pos].threads = (char *)malloc(sizeof(char) * 50);
 	strcpy(all_p[pos].threads, data);
-	//printf("inside struct: %s\n", all_p[pos].threads);
-    }
-    else if (strcmp(buffer, "vmrs") == 0){
-	//printf("# THREADS: %s\n",data);
-	all_p[pos].memory = (char *)malloc(sizeof(char) * 50);
+    }else if (strcmp(buffer, "vmrs") == 0){
 	strcpy(all_p[pos].memory, data);
     }
 
@@ -270,18 +238,19 @@ void analizeTxt(char *logFile) {
 	printf("cannot open file");
     }
 
-    char* line = (char *)malloc(sizeof(char)*100);
+    char line[500]; 
+    memset(line, 0, 500);
 
 
     while((c = read(fp, f, 1)) > 0){
 	*f = tolower(*f);
 
 	if( *f == '\n'){
+	    //printf("%s\n", line);
 	    strcat(line, "\n\0");
 	    processLine(line);
-	    free(line);
-	    line = (char *)malloc(sizeof(char)*100);
-	    //*line = NULL;
+	    memset(line, 0, 500);
+	    
 	    
 	}else{
 	    strcat(line, f);
