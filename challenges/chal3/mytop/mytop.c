@@ -57,7 +57,7 @@ int main(){
 		if(isdigit(dir->d_name[0])){
 			strcat(path, dir->d_name);
 			strcat(path, "/status");
-			printf("path: %s\n", path);
+			//printf("path: %s\n", path);
 			all_p[pos].memory = "0";
 			analizeTxt(path);
 			pos++;
@@ -65,7 +65,7 @@ int main(){
 			strcpy(path, "/proc/");
 		strcat(fpath, dir->d_name);
 		strcat(fpath, "/fd");
-		printf("file path: %s\n", fpath);
+		//printf("file path: %s\n", fpath);
 		DIR *fdd = opendir(fpath);
 		struct dirent *fd_dir;
 		while((fd_dir = readdir(fdd)) != NULL) {
@@ -74,6 +74,7 @@ int main(){
 
 		closedir(fdd);
 		all_p[pos].open_files = openFiles - 2;
+		openFiles = 0;
 		strcpy(fpath, "/proc/");
 		//checkOpenFiles(fpath);
 
@@ -113,6 +114,9 @@ void showTable(){
 	printf("|PID     | PPID   | STATUS        |THREADS| MEMORY     |OPEN FILES|\n");
 	printf("|________|________|_______________|_______|____________|__________|\n");
 	for(int i = 0; i < pos; i++){
+		if(all_p[i].pid == 0){
+			continue;
+		}
 		//printf("%s\t%s\n", all_p[i].pid, all_p[i].parent);
 		memory = atof(all_p[i].memory) / 1000;
 		
@@ -147,10 +151,13 @@ sigHandler(int sig)
 	fprintf(fd, "|PID     | PPID   | STATUS        |THREADS| MEMORY     |OPEN FILES|\n");
 	fprintf(fd, "|________|________|_______________|_______|____________|__________|\n");
 	for(int i = 0; i < pos; i++){
+		if(all_p[i].pid == 0){
+			continue;
+		}
 		//printf("%s\t%s\n", all_p[i].pid, all_p[i].parent);
 		memory = atof(all_p[i].memory) / 1000;
 		
-		fprintf(fd, "|%8s|%8s|%15s|%7s|%12f|\n", all_p[i].pid, all_p[i].parent, all_p[i].state, all_p[i].threads, memory);	
+		fprintf(fd, "|%8s|%8s|%15s|%7s|%12f|%10i|\n", all_p[i].pid, all_p[i].parent, all_p[i].state, all_p[i].threads, memory, all_p[i].open_files);	
 
 	}
 	fprintf(fd, "|________|________|_______________|_______|____________|__________|\n");
