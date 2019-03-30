@@ -63,28 +63,28 @@ func handleConn(conn net.Conn, user string) {
 	ch := make(chan string) // outgoing client messages
 	go clientWriter(conn, ch)
 	who := conn.RemoteAddr().String()
+	user = strings.TrimSuffix(user, "\n")
 
-	_, found := users[strings.TrimSuffix(user, "\n")]
+	_, found := users[user]
 	if(found){
 		ch <- "There's already a user with that username"
 		conn.Close()
 		return
 
 	}
-	users[strings.TrimSuffix(user, "\n")] = who
-	//users_chan[user] = conn
-	uc[strings.TrimSuffix(user, "\n")] = conn
-	fmt.Println("New connected user [" + strings.TrimSuffix(user, "\n") +"]")
+	users[user] = who
+	uc[user] = conn
+	fmt.Println("New connected user [" + user +"]")
 	ch <- "Welcome to Simple IRC server"
-	ch <- "irc-server > Your user [" + strings.TrimSuffix(user, "\n") + "] is successfully logged"
+	ch <- "irc-server > Your user [" + user + "] is successfully logged"
 
-	messages <- strings.TrimSuffix(user, "\n") + " has arrived"
+	messages <- user + " has arrived"
 	entering <- ch
 
 	
 
 	input := bufio.NewScanner(conn)
-	//ch <- strings.TrimSuffix(user, "\n") + "> "
+	//ch <- user + "> "
 	fmt.Println(input.Text());
 	for input.Scan() {
 		var s []string
@@ -98,9 +98,9 @@ func handleConn(conn net.Conn, user string) {
 			}
 			ch <- u
 		case "/user":
-			if(len(s) == 2){
+			if(len(s) > 1){
 			var u string
-			u = "not user found"
+			u = "irc-server > no user found with that name"
 			for k, v :=range users{
 				if(strings.Trim(k, " ") == strings.Trim(s[1], " ")){
 					u = "username: " + k + " IP: " + v
@@ -112,7 +112,8 @@ func handleConn(conn net.Conn, user string) {
 			}
 			
 		case "/time":
-			ch <- time.Now().Format("15:04:05\n")
+			t :=time.Now()
+			ch <- "irc-server > Time: " + t.Format("15:04:05\n")
 		case "/msg":
 			if(len(s) > 2){
 				var u string
@@ -124,13 +125,13 @@ func handleConn(conn net.Conn, user string) {
 				}
 				fmt.Println(u)
 				if _,found := uc[strings.Trim(s[1], " ")]; found{
-					fmt.Fprintln(uc[strings.Trim(s[1], " ")], strings.TrimSuffix(user, "\n") + ">" + u)
+					fmt.Fprintln(uc[strings.Trim(s[1], " ")], user + ">" + u)
 				}else{
 					ch <- "irc-server > No such user"
 				}
 			}
 		default:
-			messages <- strings.TrimSuffix(user, "\n") + ": " + input.Text()
+			messages <- user + "> " + input.Text()
 		}
 		}
 	}
@@ -140,6 +141,7 @@ func handleConn(conn net.Conn, user string) {
 	messages <- "irc-server >" + strings.TrimSuffix(user, "\n") + " has left"
 	fmt.Println("[" + strings.TrimSuffix(user, "\n") +"] left")
 	delete(users, user)
+	delete(uc, user)
 	conn.Close()
 }
 
