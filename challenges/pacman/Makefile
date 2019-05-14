@@ -1,1 +1,5 @@
-go build pacman.go
+all:
+	go build src/pacman.go
+
+clean:
+	rm pacman

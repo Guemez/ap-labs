@@ -2,11 +2,11 @@
 
 pacman.go
 
-![](https://github.com/Guemez/ap-labs/blob/master/challenges/pacman/architecture.png)
+![](assets/architecture.png)
 
 External libraries
 
-![](https://github.com/Guemez/ap-labs/blob/master/challenges/pacman/external.png)
+![](assets/external.png)
 
 
 ## METHODS
