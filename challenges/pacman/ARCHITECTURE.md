@@ -2,8 +2,11 @@
 
 pacman.go
 
+![](challenges/pacman/architecture.png)
 
 External libraries
+
+![](challenges/pacman/external.png)
 
 ## METHODS
 ### loadPicture(path string) (pixel.Picture.error)
