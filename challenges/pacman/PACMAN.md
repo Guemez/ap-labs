@@ -14,5 +14,6 @@ go get github.com/go-gl/glfw/v3.2/glfw
 
 # TO RUN
 ```
-go run pacman.go -g <# ghosts>
+make
+./pacman -g <# ghosts>
 ```
