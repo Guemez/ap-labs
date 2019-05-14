@@ -10,7 +10,7 @@ External libraries
 
 
 ## METHODS
-### loadPicture(path string) (pixel.Picture.error)
+### loadPicture(path string) (pixel.Picture, error)
 Opens image in path, creates a pixel.Picture object with the image and returns pixel.Picture and error if any.
 
 ### checkCollision(vec1, vec2 pixel.Vec) (bool)
